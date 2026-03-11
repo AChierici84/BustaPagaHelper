@@ -157,11 +157,11 @@ async function askOpenAI(term: string, contextItems: typeof glossary) {
           {
             role: 'system',
             content:
-              'Sei un assistente esperto di busta paga italiana. Rispondi in italiano semplice e chiaro, in massimo 10 righe. Se ci sono dubbi o il termine e ambiguo, dillo esplicitamente.',
+              'Sei un assistente esperto di busta paga italiana. Fornisci solo una spiegazione in italiano semplice e chiaro, in massimo 10 righe. Non fare domande, non chiedere chiarimenti, non proporre una chat e non invitare l\'utente a rispondere. Se il termine è ambiguo, scegli l\'interpretazione più probabile in base al contesto e indica brevemente l\'assunzione fatta.',
           },
           {
             role: 'user',
-            content: `Termine selezionato: "${term}"\n\nContesto glossario interno:\n${context}\n\nFornisci una spiegazione utile per un dipendente, con esempio pratico breve quando possibile.`,
+            content: `Termine selezionato: "${term}"\n\nContesto glossario interno:\n${context}\n\nFornisci una spiegazione utile per un dipendente, con un breve esempio pratico quando possibile. Restituisci solo testo esplicativo, senza domande finali o richieste di ulteriori dettagli.`,
           },
         ],
       }),
