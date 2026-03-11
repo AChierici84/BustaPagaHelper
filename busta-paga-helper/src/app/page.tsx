@@ -10,6 +10,7 @@ export default function Home() {
   const [fileUrl, setFileUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [text, setText] = useState('')
+  const [source, setSource] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function Home() {
     setFile(selected)
     setError(null)
     setText('')
+    setSource(null)
   }
 
   const showMeanings = async (label: string) => {
@@ -43,10 +45,12 @@ export default function Home() {
         throw new Error(data.error || 'Errore dal server')
       }
       setText(data.text || 'Nessuna spiegazione trovata')
+      setSource(data.source || null)
       setError(null)
     } catch (e: any) {
       setError(e.message || 'Errore interno')
       setText('')
+      setSource(null)
     } finally {
       setLoading(false)
     }
@@ -166,6 +170,11 @@ export default function Home() {
           >
             Spiegazione voce
           </h2>
+          {source && (
+            <p style={{ marginTop: 0, color: '#555', fontSize: '0.9rem' }}>
+              Fonte: {source === 'openai' ? 'OpenAI' : source === 'glossary' ? 'Glossario locale' : 'N/A'}
+            </p>
+          )}
           {loading ? (
             <p style={{ fontStyle: 'italic', color: '#666' }}>Caricamento spiegazione...</p>
           ) : (

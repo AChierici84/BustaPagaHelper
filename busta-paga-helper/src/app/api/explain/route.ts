@@ -104,6 +104,85 @@ const fuseOptions = {
 
 const fuse = new Fuse(glossary, fuseOptions)
 
+const OPENAI_MODEL = process.env.OPENAI_MODEL ?? 'gpt-4.1-mini'
+
+function extractOpenAIText(data: any): string | null {
+  if (typeof data?.output_text === 'string' && data.output_text.trim().length > 0) {
+    return data.output_text.trim()
+  }
+
+  const output = Array.isArray(data?.output) ? data.output : []
+  const chunks: string[] = []
+
+  for (const item of output) {
+    const content = Array.isArray(item?.content) ? item.content : []
+    for (const part of content) {
+      if (part?.type === 'output_text' && typeof part?.text === 'string') {
+        chunks.push(part.text)
+      }
+      if (part?.type === 'text' && typeof part?.text === 'string') {
+        chunks.push(part.text)
+      }
+    }
+  }
+
+  const merged = chunks.join('\n').trim()
+  return merged.length > 0 ? merged : null
+}
+
+async function askOpenAI(term: string, contextItems: typeof glossary) {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) {
+    return null
+  }
+
+  const context = contextItems
+    .map((item) => `- Termine: ${item.term}\n  Spiegazione base: ${item.explanation}`)
+    .join('\n')
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 20000)
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/responses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: OPENAI_MODEL,
+        temperature: 0.2,
+        input: [
+          {
+            role: 'system',
+            content:
+              'Sei un assistente esperto di busta paga italiana. Rispondi in italiano semplice e chiaro, in massimo 10 righe. Se ci sono dubbi o il termine e ambiguo, dillo esplicitamente.',
+          },
+          {
+            role: 'user',
+            content: `Termine selezionato: "${term}"\n\nContesto glossario interno:\n${context}\n\nFornisci una spiegazione utile per un dipendente, con esempio pratico breve quando possibile.`,
+          },
+        ],
+      }),
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      console.error('OpenAI error status:', response.status)
+      return null
+    }
+
+    const data = await response.json()
+    return extractOpenAIText(data)
+  } catch (error) {
+    console.error('Errore chiamata OpenAI:', error)
+    return null
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 export async function GET(req: NextRequest) {
   try {
     const q = req.nextUrl.searchParams.get('q')
@@ -114,13 +193,19 @@ export async function GET(req: NextRequest) {
 
     const results = fuse.search(q)
 
+    const topMatches = results.slice(0, 3).map((r) => r.item)
+    const llmText = await askOpenAI(q, topMatches.length > 0 ? topMatches : glossary.slice(0, 3))
+    if (llmText) {
+      return NextResponse.json({ text: llmText, source: 'openai' })
+    }
+
     if (results.length > 0) {
       // Prendo il primo risultato migliore
       const bestMatch = results[0].item
-      return NextResponse.json({ text: bestMatch.explanation })
+      return NextResponse.json({ text: bestMatch.explanation, source: 'glossary' })
     }
 
-    return NextResponse.json({ text: "Nessuna spiegazione disponibile per questo termine." })
+    return NextResponse.json({ text: "Nessuna spiegazione disponibile per questo termine.", source: 'none' })
   } catch (err) {
     console.error('Errore imprevisto:', err)
     return NextResponse.json({ error: 'Errore interno del server' }, { status: 500 })

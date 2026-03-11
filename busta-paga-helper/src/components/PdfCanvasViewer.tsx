@@ -111,9 +111,21 @@ export default function PdfCanvasViewer({ file,showMeanings }: Props) {
 
             if (nearby.length > 0) {
               const best = nearby[0]
+
+              // Costruisce il contesto con le parole vicine sulla stessa riga.
+              const lineTolerance = Math.max(2.5, best.height * 0.8)
+              const horizontalWindow = 120
+
+              const nearbyWords = nearby
+                .filter((w) => Math.abs(w.y - best.y) <= lineTolerance)
+                .filter((w) => Math.abs(w.x - best.x) <= horizontalWindow)
+                .sort((a, b) => a.x - b.x)
+
+              const contextText = nearbyWords.map((w) => w.text).join(' ').trim() || best.text
+
               setHighlight({
                 page: pageNum,
-                text: best.text,
+                text: contextText,
                 x: best.x * scale,
                 y: (viewport.height - best.y * scale),
                 width: best.width * scale,

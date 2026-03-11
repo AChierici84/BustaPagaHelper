@@ -16,6 +16,20 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## OpenAI Integration
+
+The endpoint `src/app/api/explain/route.ts` can use OpenAI to generate richer explanations.
+
+Create a `.env.local` file in the project root with:
+
+```bash
+OPENAI_API_KEY=your_api_key_here
+# optional (default: gpt-4.1-mini)
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+If `OPENAI_API_KEY` is not set, the app automatically falls back to the local glossary.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
