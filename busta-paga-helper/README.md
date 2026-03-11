@@ -48,3 +48,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Sample
+
+<img width="1839" height="815" alt="Screenshot 2026-03-11 102119" src="https://github.com/user-attachments/assets/0ec9109a-375c-46b7-95df-23c8f91f1fb6" />
+<img width="1824" height="472" alt="Screenshot 2026-03-11 102142" src="https://github.com/user-attachments/assets/933c0585-cf55-45fd-9538-a38bbf4b0bd2" />
+<img width="1841" height="651" alt="Screenshot 2026-03-11 102202" src="https://github.com/user-attachments/assets/0f160568-e1d8-47b7-9664-f20f2f07d1f1" />
+<img width="1859" height="700" alt="Screenshot 2026-03-11 102310" src="https://github.com/user-attachments/assets/c24b2044-09e6-4c05-8c6d-924f7757af55" />
+<img width="1840" height="770" alt="Screenshot 2026-03-11 102349" src="https://github.com/user-attachments/assets/44e7edba-5bf1-4a25-97ea-675234d1d70d" />
+<img width="1831" height="592" alt="Screenshot 2026-03-11 102422" src="https://github.com/user-attachments/assets/ebe6513b-27cf-4c1c-9dc7-ef0b21528ff5" />
+
